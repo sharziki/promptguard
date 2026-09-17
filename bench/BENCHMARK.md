@@ -48,6 +48,26 @@ low-scoring attacks. Selecting by false-alarm budget instead fixed it. The bad
 version is described here rather than quietly deleted, because "optimize the
 constraint that actually binds" is the transferable lesson.
 
+## Held-out validation (the check that was missing)
+
+The thresholds were derived from the 600 rows above. Evaluating them on those
+same rows proves nothing, so `bench/validate_heldout.py` runs the **shipped
+library** over each dataset's **test** split, which the derivation never saw:
+
+| held-out set | n | block recall | false block | median latency |
+|---|---|---|---|---|
+| jackhhao test | 200 | **0.980** | 0.040 | 155 ms |
+| deepset test | 116 | **0.667** | 0.000 | 167 ms |
+
+Compare to the derivation set (0.934 and 0.704). Recall **improved** on one
+distribution and **degraded** on the other, at an identical threshold. The
+false-block rate tripled on jackhhao (1.2% -> 4.0%) while staying inside the
+level's ~5% target.
+
+**This is the most important table in this document.** It says the single
+headline recall number is not transferable: what you get depends on the attack
+distribution you actually face. Recalibrate on your own labeled traffic.
+
 ## Limitations
 
 1. **This is one layer, not a security boundary.** It inspects text. It cannot

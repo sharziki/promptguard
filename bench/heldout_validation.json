@@ -1,0 +1,13 @@
+{
+  "dataset": "jackhhao/jailbreak-classification",
+  "split": "test",
+  "level": "balanced",
+  "n": 200,
+  "attack_rate": 0.505,
+  "block_recall": 0.9802,
+  "false_block_rate": 0.0404,
+  "any_flag_false_alarm": 0.0707,
+  "median_latency_ms": 155,
+  "throughput_per_s": 59.4,
+  "PASS": true
+}

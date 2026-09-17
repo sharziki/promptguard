@@ -28,12 +28,23 @@ hold false alarms near 1% while still catching 70-93% of attacks.
 
 | Level | False alarms | Attacks blocked |
 |---|---|---|
-| `balanced` (default) | ~0-1% | 70-93% |
+| `balanced` (default) | ~0-4% | **67-98%** |
 | `strict` | ~0-6% | 76-93% |
 | `paranoid` | ~3-30% | 89-98% |
 
 Thresholds are **derived** from the measured curves by
-`bench/derive_thresholds.py`, not hand-picked.
+`bench/derive_thresholds.py`, not hand-picked, and then checked on **held-out
+test splits the derivation never saw** (`bench/validate_heldout.py`):
+
+| held-out set | block recall | false block |
+|---|---|---|
+| jackhhao test (n=200) | **0.980** | 0.040 |
+| deepset test (n=116) | **0.667** | 0.000 |
+
+The spread is the honest picture. On the deepset distribution the default level
+misses **a third of attacks**, worse than its derivation-set number of 0.70.
+If your traffic looks like that, use `paranoid` and recalibrate on your own
+labeled examples.
 
 ## Install
 
@@ -94,8 +105,11 @@ curl -X POST localhost:8098/v1/scan -H 'content-type: application/json' \
 
 - **This is one layer, not a security boundary.** It reads text. It does not
   replace authorization, sandboxing, or least-privilege tool design.
-- **It misses ~30% of the `deepset` corpus at the default level.** Use `paranoid`
-  where a miss costs more than a false alarm.
+- **It misses ~33% of the `deepset` corpus at the default level** (measured on
+  its held-out test split, worse than the 30% the derivation set suggested).
+  Use `paranoid` where a miss costs more than a false alarm.
+- **Recall varies a lot by attack distribution**: 0.98 on one held-out set, 0.67
+  on the other, at the same threshold. Calibrate on your own traffic.
 - **Not adversarially tested.** Benchmarks are public corpora; a motivated
   attacker who knows the filter is there can probe it. Monitor the FLAG band.
 - English only so far.

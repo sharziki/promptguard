@@ -1,0 +1,13 @@
+{
+  "dataset": "deepset/prompt-injections",
+  "split": "test",
+  "level": "balanced",
+  "n": 116,
+  "attack_rate": 0.5172,
+  "block_recall": 0.6667,
+  "false_block_rate": 0.0,
+  "any_flag_false_alarm": 0.0179,
+  "median_latency_ms": 167,
+  "throughput_per_s": 56.7,
+  "PASS": false
+}
