@@ -1,5 +1,7 @@
 # PromptGuard
 
+[![tests](https://github.com/sharziki/promptguard/actions/workflows/tests.yml/badge.svg)](https://github.com/sharziki/promptguard/actions/workflows/tests.yml)
+
 **Detect prompt injections and jailbreaks in ~170ms, for ~$20 per million scans.**
 
 ```python
