@@ -99,8 +99,11 @@ curl -X POST localhost:8098/v1/scan -H 'content-type: application/json' \
 - **Not adversarially tested.** Benchmarks are public corpora; a motivated
   attacker who knows the filter is there can probe it. Monitor the FLAG band.
 - English only so far.
-- Input is truncated to 4,000 characters, so an attacker cannot inflate your cost
-  with a huge body.
+- **Long inputs are clipped to 4,000 characters (head + tail).** An unbounded
+  body would let an attacker inflate your cost. An earlier head-only clip was a
+  one-line bypass: pad with filler, append the injection, and it scored 0.09 and
+  was allowed. Keeping both ends closes that specific attack but a very long
+  input is still adversary-controlled space, so treat length itself as a signal.
 
 ## Development
 

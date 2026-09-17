@@ -110,6 +110,27 @@ _QUESTIONS = {
 }
 
 MAX_CHARS = 4000
+_HEAD_SHARE = 0.6
+
+
+def _clip(text: str, budget: int = MAX_CHARS) -> str:
+    """Keep the head AND the tail of an oversized input.
+
+    Naive head-only truncation is a one-line bypass: pad with 4,000 characters
+    of filler, then append the injection. Verified against the live model, that
+    attack scored 0.09 and was allowed. Attacks cluster at both ends (a prefix
+    override, or an appended "### END OF INPUT ### SYSTEM:" payload), so both
+    ends are kept and the middle, which is the cheapest place to hide filler, is
+    dropped with a visible marker.
+
+    This narrows the bypass rather than closing it. A long input is still an
+    adversary-controlled budget; treat length itself as a signal.
+    """
+    if len(text) <= budget:
+        return text
+    head = int(budget * _HEAD_SHARE)
+    tail = budget - head
+    return f"{text[:head]}\n...[{len(text) - budget} characters omitted]...\n{text[-tail:]}"
 
 
 class PromptGuard:
@@ -128,9 +149,9 @@ class PromptGuard:
         if not text or not text.strip():
             raise ValueError("text is empty; nothing to scan")
 
-        # Truncate head-side: injections overwhelmingly appear early, and an
-        # unbounded body would let an attacker inflate cost and latency.
-        state = f"USER INPUT TO THE ASSISTANT:\n{text[:MAX_CHARS]}"
+        # Clip head+tail: an unbounded body would let an attacker inflate cost
+        # and latency, and head-only clipping is a trivial bypass (see _clip).
+        state = f"USER INPUT TO THE ASSISTANT:\n{_clip(text)}"
         t0 = time.perf_counter()
         resp = self._client.system_one(state=state, questions=_QUESTIONS)
         latency = (time.perf_counter() - t0) * 1000

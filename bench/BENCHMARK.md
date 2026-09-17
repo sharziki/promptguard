@@ -55,9 +55,12 @@ constraint that actually binds" is the transferable lesson.
 2. **`deepset` recall is 70% at the default.** Roughly three in ten of its
    attacks score low enough to pass. Use `paranoid` where a miss is costlier than
    a false alarm, and layer other defenses regardless.
-3. **Not adversarially tested.** These are public benchmark corpora. An attacker
-   who knows this filter exists can probe it. Real deployment needs monitoring of
-   the FLAG band.
+3. **Barely adversarially tested.** These are public benchmark corpora. One
+   hand-built bypass was found and fixed during review: padding an input past
+   the truncation budget and appending the attack scored 0.09 and was ALLOWED.
+   Head+tail clipping closes that case (same input now scores 0.99), but the
+   finding is that a motivated attacker probing this filter will find more.
+   Monitor the FLAG band and do not treat this as a boundary.
 4. **English only.** Multilingual injection is untested.
 5. **Two datasets.** Consistent across both, which is real evidence, but not proof
    it holds on your traffic. Recalibrate with `bench/derive_thresholds.py`.
