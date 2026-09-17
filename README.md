@@ -48,9 +48,11 @@ labeled examples.
 
 ## Install
 
+**Not on PyPI yet.** Install from source:
+
 ```bash
-pip install promptguard-jev              # library
-pip install 'promptguard-jev[server]'    # + HTTP service
+git clone https://github.com/sharziki/promptguard && cd promptguard
+pip install -e '.[server]'               # omit [server] for just the library
 export TYPESAFE_API_KEY='...'            # https://typesafe.ai
 ```
 
